@@ -74,7 +74,6 @@ def empresa(request, id):
         documentos = Documento.objects.filter(empresa=empresa)
         return render(request, 'empresa.html', {'empresa': empresa, 'documentos': documentos})
     
-
 def add_doc(request, id):
     empresa = Empresas.objects.get(id=id)
     titulo = request.POST.get('titulo')
@@ -105,3 +104,15 @@ def add_doc(request, id):
     messages.add_message(request, constants.SUCCESS, 'Arquivo Cadastrado com Sucesso')
 
     return redirect(f'/empresarios/empresa/{id}')
+
+def excluir_doc(request, id):
+    documento = Documento.objects.get(id=id)
+
+    if documento.empresa.user != request.user:
+        messages.add_message(request, constants.ERROR, "Esse documento não é seu")
+        return redirect(f'/empresarios/empresa/{empresa.id}')
+
+    documento.delete()
+    messages.add_message(request, constants.SUCCESS, 'Documento excluido com sucesso!')
+
+    return redirect(f'/empresarios/empresa/{documento.empresa.id}')
